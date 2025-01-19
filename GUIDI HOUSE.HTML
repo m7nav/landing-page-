@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUIDI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Baskerville', serif;
+        }
+
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #ffffff;
+            --accent-color: #c4a47c;
+            --text-light: #888888;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            cursor: default;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.2rem 3rem;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+
+        .logo:hover {
+            opacity: 0.7;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        .search-cart {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .search-bar {
+            padding: 0.8rem 1.5rem;
+            width: 250px;
+            border: none;
+            background: #f5f5f5;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: #ebebeb;
+            width: 300px;
+        }
+
+        .cart {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .cart::after {
+            content: '0';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .cart.has-items::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .nav {
+            display: flex;
+            gap: 3rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav a:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .hero {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f8f8;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 300;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        .collection-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            cursor: pointer;
+        }
+
+        .collection-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            transition: transform 1.2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
+
+        .collection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .collection-item:hover .collection-overlay {
+            opacity: 1;
+        }
+
+        .collection-item:hover img {
+            transform: scale(1);
+        }
+
+        .collection-item h3 {
+            color: var(--secondary-color);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-size: 2rem;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .collection-item:hover h3 {
+            transform: translateY(0);
+        }
+
+        .about-section {
+            padding: 12rem 4rem;
+            background: #f8f8f8;
+            position: relative;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-bottom: 3rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .about-content p {
+            margin-bottom: 2rem;
+            line-height: 2;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .about-content strong {
+            color: var(--primary-color);
+            font-weight: 400;
+        }
+
+        .about-image {
+            position: relative;
+            height: 100%;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            right: -2rem;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color);
+            z-index: -1;
+        }
+
+        .about-quote {
+            font-size: 2rem;
+            font-style: italic;
+            color: var(--accent-color);
+            margin: 4rem 0;
+            text-align: center;
+            max-width: 800px;
+            margin: 6rem auto;
+        }
+
+        .newsletter {
+            padding: 12rem 2rem;
+            text-align: center;
+            background-color: #f8f8f8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 49%, var(--accent-color) 50%);
+            opacity: 0.1;
+        }
+
+        .newsletter h2 {
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            font-size: 2.5rem;
+        }
+
+        .newsletter p {
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .newsletter form {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .newsletter input {
+            padding: 1.2rem 2rem;
+            width: 400px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .newsletter button {
+            padding: 1.2rem 3rem;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color);
+            transition: transform 0.5s ease;
+        }
+
+        .newsletter button:hover::before {
+            transform: translateX(100%);
+        }
+
+        footer {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 5rem 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+            padding: 0 2rem;
+        }
+
+        .footer-links h3 {
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                gap: 1.5rem;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-image::after {
+                display: none;
+            }
+
+            .newsletter input {
+                width: 100%;
+            }
+
+            .newsletter form {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-section {
+                padding: 4rem 2rem;
+            }
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: white;
+            color: black;
+            padding: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            border: 1px solid black;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <header class="header">
+        <div class="logo">GUIDI</div>
+        <div class="search-cart">
+            <input type="search" class="search-bar" placeholder="Search...">
+            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+        <nav class="nav">
+            <a href="#" data-aos="fade-down" data-aos-delay="100">Collections</a>
+            <a href="#about" data-aos="fade-down" data-aos-delay="200">About Us</a>
+            <a href="#" data-aos="fade-down" data-aos-delay="300">Contact</a>
+        </nav>
+    </header>
+
+    <section class="hero" style="display: flex; align-items: center; justify-content: space-between; padding: 2rem;">
+        <img src="C:\Users\Vinod\Downloads\ACCESSOIRES-DE-BEAUTE_2025_VISUEL_PRIORITAIRE_VIDE-POCHE-EAU-ROSE_RVB_HD_4080x2295_16-9_DIPTYQUE.avif" 
+             alt="Hero Image" 
+             style="width: 50%; height: auto; object-fit: cover; margin-left: 1rem;"
+             data-aos="fade-in"
+             data-aos-duration="1500"
+             data-aos-delay="200"
+             data-aos-easing="ease-out">
+        <div style="padding: 2rem; width: 40%; text-align: left;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;" data-aos="fade-up" 
+                data-aos-delay="700" 
+                data-aos-duration="1000">ACCESSORIES TO ENHANCE BEAUTY ESSENTIALS</h2>
+            <p style="margin-bottom: 1.5rem; line-height: 1.5;" data-aos="fade-up" 
+               data-aos-delay="900" 
+               data-aos-duration="1000">The bathroom accessories collection is enriched with a handful of new timeless and poetic pieces that pay tribute to craftsmanship and beautiful materials.</p>
+            <button style="background: transparent; color: black; border: 1px solid black; padding: 10px 20px; cursor: pointer; font-weight: bold;" 
+                    data-aos="fade-up" 
+                    data-aos-delay="1100" 
+                    data-aos-duration="1000">DISCOVER</button>
+        </div>
+    </section>
+    </section>
+
+    
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUIDI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #ffffff;
+            --accent-color: #c4a47c;
+            --text-light: #888888;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+            cursor: default;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.2rem 3rem;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+
+        .logo:hover {
+            opacity: 0.7;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        .search-cart {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .search-bar {
+            padding: 0.8rem 1.5rem;
+            width: 250px;
+            border: none;
+            background: #f5f5f5;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: #ebebeb;
+            width: 300px;
+        }
+
+        .cart {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .cart::after {
+            content: '0';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .cart.has-items::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .nav {
+            display: flex;
+            gap: 3rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav a:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .hero {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f8f8;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 5rem;
+            font-weight: 300;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        .collection-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            cursor: pointer;
+        }
+
+        .collection-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            transition: transform 1.2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
+
+        .collection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .collection-item:hover .collection-overlay {
+            opacity: 1;
+        }
+
+        .collection-item:hover img {
+            transform: scale(1);
+        }
+
+        .collection-item h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--secondary-color);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-size: 2rem;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .collection-item:hover h3 {
+            transform: translateY(0);
+        }
+
+        .about-section {
+            padding: 12rem 4rem;
+            background: #f8f8f8;
+            position: relative;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-bottom: 3rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .about-content p {
+            margin-bottom: 2rem;
+            line-height: 2;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .about-content strong {
+            color: var(--primary-color);
+            font-weight: 400;
+        }
+
+        .about-image {
+            position: relative;
+            height: 100%;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            right: -2rem;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color);
+            z-index: -1;
+        }
+
+        .about-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-style: italic;
+            color: var(--accent-color);
+            margin: 4rem 0;
+            text-align: center;
+            max-width: 800px;
+            margin: 6rem auto;
+        }
+
+        .newsletter {
+            padding: 12rem 2rem;
+            text-align: center;
+            background-color: #f8f8f8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 49%, var(--accent-color) 50%);
+            opacity: 0.1;
+        }
+
+        .newsletter h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            font-size: 2.5rem;
+        }
+
+        .newsletter p {
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .newsletter form {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .newsletter input {
+            padding: 1.2rem 2rem;
+            width: 400px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .newsletter button {
+            padding: 1.2rem 3rem;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color);
+            transition: transform 0.5s ease;
+        }
+
+        .newsletter button:hover::before {
+            transform: translateX(100%);
+        }
+
+        footer {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 5rem 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+            padding: 0 2rem;
+        }
+
+        .footer-links h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                gap: 1.5rem;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-image::after {
+                display: none;
+            }
+
+            .newsletter input {
+                width: 100%;
+            }
+
+            .newsletter form {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-section {
+                padding: 4rem 2rem;
+            }
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: white;
+            color: black;
+            padding: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            border: 1px solid black;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <header class="header">
+        <div class="logo">GUIDI</div>
+        <div class="search-cart">
+            <input type="search" class="search-bar" placeholder="Search...">
+            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+        <nav class="nav">
+            <a href="#" data-aos="fade-down" data-aos-delay="100">Collections</a>
+            <a href="#about" data-aos="fade-down" data-aos-delay="200">About Us</a>
+            <a href="#" data-aos="fade-down" data-aos-delay="300">Contact</a>
+        </nav>
+    </header>
+
+    
+    </section>
+    </section>
+
+    <section class="collection-grid" style="display: flex; flex-direction: column; padding: 1rem 0;">
+        <h2 style="text-align: center; margin-bottom: 1rem; font-size: 2rem; color: #1a1a1a; font-family: 'Baskerville', serif; font-weight: 300;">Best Sellers</h2>
+        <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
+            <a href="#" style="text-decoration: none; color: #1a1a1a; font-family: 'Baskerville', serif;">SEE ALL</a>
+            <a href="#" style="text-decoration: none; color: #1a1a1a; font-family: 'Baskerville', serif;">FRAGRANCE</a>
+            <a href="#" style="text-decoration: none; color: #1a1a1a; font-family: 'Baskerville', serif;">CANDLES & HOME</a>
+            <a href="#" style="text-decoration: none; color: #1a1a1a; font-family: 'Baskerville', serif;">BATH & BODY</a>
+            <a href="#" style="text-decoration: none; color: #1a1a1a; font-family: 'Baskerville', serif;">HOME DECOR</a>
+        </div>
+        <div class="slider-container" style="position: relative; width: 100%; overflow: hidden;">
+            <div class="slider" style="display: flex; transition: transform 0.5s ease; animation: slide 35s linear infinite;">
+                <!-- First set of images -->
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.02.jpeg" 
+                         alt="GUIDI Collection 1"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 1</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.02 (2).jpeg" 
+                         alt="GUIDI Collection 2"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 2</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.02 (1).jpeg" 
+                         alt="GUIDI Collection 3"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 3</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.01.jpeg" 
+                         alt="GUIDI Collection 4"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 4</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.01 (1).jpeg" 
+                         alt="GUIDI Collection 5"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 5</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.06.39.jpeg" 
+                         alt="GUIDI Collection 6"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 6</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.06.39 (1).jpeg" 
+                         alt="GUIDI Collection 7"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 7</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- Additional perfume bottles -->
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\make A  perfume bottle with the brand name GUIDI and perfume name is fresh oud and eau de perfum written at the bottom make it minimal the bottle shoul look transparent light blue.jpg"
+                         alt="Fresh Oud"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>Fresh Oud</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\make 1 perfume bottles with brand name GUIDI and perfume name is Sunrise On The Red Sand Dunes and eau de perfum written at the bottom make it minimal.jpg"
+                         alt="Sunrise On The Red Sand Dunes"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>Sunrise On The Red Sand Dunes</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\make 1 perfume bottles with brand name GUIDI and perfume name is SAND DESERT AT SUNSET and eau de perfum written at the bottom make it minimal.jpg"
+                         alt="Sand Desert at Sunset"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>Sand Desert at Sunset</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\make 1 perfume bottles with brand name GUIDI and perfume name is OUD WOOD and  eau de perfum written at the bottom make it minimal MAKE IT IN A BLACK KINDA BOTTLE.jpg"
+                         alt="Oud Wood"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>Oud Wood</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\make 1 perfume bottles with brand name GUIDI and perfume name is FLORA and  eau de perfum written at the bottom make it minimal MAKE FLOWER PATTERN ON THE BOTTLE .jpg"
+                         alt="Flora"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>Flora</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- Duplicate first image for seamless loop -->
+                <div class="collection-item" data-aos="fade-up" style="flex: 0 0 600px; margin-right: 1rem; position: relative;">
+                    <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 00.17.02.jpeg" 
+                         alt="GUIDI Collection 1"
+                         style="width: 600px; height: auto; object-fit: contain;">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <h3>GUIDI Collection 1</h3>
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes slide {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-4800px); /* Adjusted for more images */
+                }
+            }
+            .slider:hover {
+                animation-play-state: paused;
+            }
+            .collection-item:hover .collection-overlay {
+                opacity: 1;
+            }
+        </style>
+    </section>
+    <section class="candle-of-month" data-aos="fade-up" style="text-align: center; padding: 4rem 0; background-color: var(--secondary-color);">
+        <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 01.31.00.jpeg" alt="Candle of the Month - Amande" style="max-width: 800px; width: 100%; height: auto; margin-bottom: 2rem; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1rem; font-family: 'Baskerville', serif; font-weight: 300;">Candle of the Month: Amande (Almond)</h2>
+        <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto; color: var(--text-light); font-family: 'Baskerville', serif;">The Amande (Almond) candle graces the depths of January with its crisp, comforting notes. A limited-edition scent in tribute to the traditional...</p>
+        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 20px; cursor: pointer;">Add to Bag</button>
+        <div style="margin-top: 10px;">
+            <a href="#" style="text-decoration: underline; color: var(--primary-color); font-size: 1rem;">Discover candle of the month</a>
+        </div>
+    </section>
+   <section class="tribute-to-creativity" data-aos="fade-up" style="display: flex; flex-direction: row; padding: 4rem 2rem; background-color: var(--secondary-color); align-items: center;">
+        <div style="flex: 1; padding-right: 2rem; text-align: center;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; font-family: 'Baskerville', serif; font-weight: 300;">A tribute to creativity</h2>
+            <p style="font-size: 1.2rem; color: var(--text-light); font-family: 'Baskerville', serif; line-height: 1.8;">GUIDI celebrates the alliance between imagination, ink and paper. White musk, rice vapor, mimosa and blond wood accords are an invitation...</p>
+            <div style="margin-top: 10px;">
+                <a href="#" style="text-decoration: underline; color: var(--primary-color); font-size: 1rem;">Discover Guidi</a>
+            </div>
+        </div>
+        <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+            <video controls style="width: 100%; max-height: 500px; object-fit: cover;">
+                <source src="C:\Users\Vinod\Downloads\Untitled video - Made with Clipchamp.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+   </section>
+    </section>
+    </section>
+    <section class="mimosa-section" data-aos="fade-up" style="display: flex; flex-direction: column; padding: 4rem 2rem; background-color: var(--secondary-color);">
+        <div style="display: flex; align-items: center;">
+            <div class="mimosa-image" style="flex: 1;">
+                <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 02.25.08.jpeg" alt="Mimosa Collection" style="width: 100%; height: auto; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="text-align: center;">
+                    <button style="background: white; color: black; border: 2px solid black; padding: 10px 20px; margin-top: 1rem; cursor: pointer;">DISCOVER THE COLLECTION</button>
+                </div>
+            </div>
+            <div class="mimosa-content" style="flex: 1; padding-left: 4rem;">
+                <h2 style="font-size: 3rem; margin-bottom: 1.5rem; font-family: 'Baskerville', serif; font-weight: 300;">Mimosa at its finest</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem; font-family: 'Baskerville', serif; color: var(--text-light); line-height: 1.8;">On the Tanneron hills near Grasse, the mimosas have finally arrived. Their small, downy blossoms release velvety, lightly honeyed notes. Winter comfort.</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 01.58.38.jpeg" alt="Mimosa Detail 1" style="width: 100%; height: auto; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 1rem; cursor: pointer;">Add to Bag</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 01.58.24.jpeg" alt="Mimosa Detail 2" style="width: 100%; height: auto; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 1rem; cursor: pointer;">Add to Bag</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 01.58.24 (2).jpeg" alt="Mimosa Detail 3" style="width: 100%; height: auto; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 1rem; cursor: pointer;">Add to Bag</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 01.58.24 (1).jpeg" alt="Mimosa Detail 4" style="width: 100%; height: auto; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button style="background: black; color: white; border: none; padding: 10px 20px; margin-top: 1rem; cursor: pointer;">Add to Bag</button>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </section>
+    <section class="skincare-ritual" data-aos="fade-up" style="text-align: center; padding: 4rem 2rem; background-color: var(--secondary-color);">
+        <h2 style="font-size: 2.5rem; margin-bottom: 2rem; font-family: 'Bakers Wille', serif; font-weight: 300;">A gentle, soothing daily skincare ritual</h2>
+        <div style="position: relative; display: inline-block;">
+            <img src="C:\Users\Vinod\Downloads\WhatsApp Image 2025-01-18 at 13.07.33.jpeg" 
+                 alt="Daily Skincare Ritual" 
+                 style="max-width: 1000px; width: 100%; height: 600px; object-fit: cover; transition: transform 0.3s ease;"
+                 onmouseover="this.style.transform='scale(1.05)'" 
+                 onmouseout="this.style.transform='scale(1)'">
+            
+            <!-- Product Hotspots -->
+            <div style="position: absolute; top: 30%; left: 20%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Face Cleanser: Gentle daily cleansing ritual')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+            
+            <div style="position: absolute; top: 45%; left: 40%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Facial Toner: Balancing and refreshing')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+            
+            <div style="position: absolute; top: 60%; left: 60%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Moisturizing Cream: Deep hydration')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+
+            <div style="position: absolute; top: 25%; left: 80%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Eye Cream: Gentle care for delicate areas')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+
+            <div style="position: absolute; top: 75%; left: 30%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Face Serum: Intensive treatment')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+
+            <div style="position: absolute; top: 50%; left: 75%; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.8); background: transparent; border-radius: 50%; cursor: pointer; animation: pulse 2s infinite;" 
+                 onclick="alert('Face Mask: Weekly deep nourishment')" 
+                 onmouseover="this.style.transform='scale(1.2)'" 
+                 onmouseout="this.style.transform='scale(1)'"></div>
+            
+            <style>
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+                    70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+                    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+                }
+            </style>
+        </div>
+    </section>
+
+    <section id="about" class="about-section" data-aos="fade-up">
+        <div class="about-content">
+            <div class="about-text">
+                <h2 class="fragrance-name" style="transition: text-shadow 0.3s ease; cursor: pointer;" 
+                    onmouseover="this.style.textShadow='2px 2px 4px rgba(0,0,0,0.3)'" 
+                    onmouseout="this.style.textShadow='none'"
+                    onclick="this.style.textShadow='3px 3px 6px rgba(0,0,0,0.4)'">
+                    The Art of GUIDI
+                </h2>
+                <p>GUIDI gives new life to time-honed techniques and tried-and-tested know-how to guarantee excellence and to celebrate and safeguard craftsmanship for future generations.</p>
+                
+                <p>Every GUIDI creation is a testament to individuality, blending timeless artistry with a modern edge. These are not mere products but meaningful expressions designed to inspire and leave a lasting impression.</p>
+                <button style="background: none; border: none; text-decoration: underline; cursor: pointer; padding: 10px 0; font-family: inherit; text-transform: capitalize; display: block; margin: 0 auto;">Discover</button>
+            </div>
+            <div class="about-image" style="position: relative;">
+                <img src="C:\Users\Vinod\Downloads\SAVOIR-FAIRE_VISUEL_COULEUVRE_MULTI-PRODUITS_SHOT02-018_2025x2532_2024_DIPTYQUE.avif" alt="GUIDI Atelier" style="width: 100%; transition: all 0.3s ease;">
+                <div class="image-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                </div>
+            </div>
+        </div>
+
+        <div class="about-quote" style="transition: text-shadow 0.3s ease; cursor: pointer;"
+             onmouseover="this.style.textShadow='2px 2px 4px rgba(0,0,0,0.3)'"
+             onmouseout="this.style.textShadow='none'"
+             onclick="this.style.textShadow='3px 3px 6px rgba(0,0,0,0.4)'">
+            "In the realm of scent, we find the purest form of memory and emotion."
+        </div>
+                <section class="explore-section" style="text-align: center; padding: 50px 0; font-family: 'Baskerville', serif;">
+                    <h2 style="font-size: 2em; margin-bottom: 40px; font-family: 'Bakersville', serif; font-weight: 300;">Explore the World of GUIDI</h2>
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; max-width: 1400px; margin: 0 auto;">
+                        <div style="flex: 1; min-width: 300px; margin: 30px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="C:\Users\Vinod\Downloads\make some fragrance bottles in the picture and make the logo iike diptyque but the brand name is _GUIDI_.jpg" 
+                                 alt="GUIDI Fragrances" 
+                                 style="width: 100%; height: auto; border-radius: 8px; margin: 0 20px;">
+                            <h3 style="margin-top: 15px; font-size: 1.2em; font-family: 'Baskerville', serif;">Fragrances</h3>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 300px; margin: 30px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="C:\Users\Vinod\Downloads\make some scented candles in the picture and make the logo iike diptyque but the brand name is _GUIDI [ add candle one on the top too} (2).jpg" 
+                                 alt="GUIDI Candles" 
+                                 style="width: 100%; height: auto; border-radius: 8px; margin: 0 20px;">
+                            <h3 style="margin-top: 15px; font-size: 1.2em; font-family: 'Baskerville', serif;">Scented Candles</h3>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 300px; margin: 30px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="C:\Users\Vinod\Downloads\make some BODY AND BATH  cleanser , moisturiser and exfoliator in the picture and make the logo iike diptyque but the brand name is _GUIDI  BRAND NAME IS _GUIDI_ PRODUCT NAME IS _GUIDI_.jpg" 
+                                 alt="GUIDI Body & Bath" 
+                                 style="width: 100%; height: auto; border-radius: 8px; margin: 0 20px;">
+                            <h3 style="margin-top: 15px; font-size: 1.2em; font-family: 'Baskerville', serif;">Body & Bath</h3>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 300px; margin: 30px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                         <img src="C:\Users\Vinod\Downloads\make some home decor  in the picture and make the logo iike _diptyque_ but the brand name is _GUIDI  BRAND NAME IS _GUIDI_ PRODUCT NAME IS _GUIDI_.jpg" 
+                                 alt="GUIDI Home Decor" 
+                                 style="width: 80%; height: auto; border-radius: 8px; margin: 0 20px;">
+                            <h3 style="margin-top: 15px; font-size: 1.2em; font-family: 'Baskerville', serif;">Home Decor</h3>
+                        </div>
+                        <hr style="border: 1px solid #888; width: 90%; margin: 0 auto;">
+                        <section class="at-your-service" style="text-align: center; padding: 50px 0; font-family: 'Baskerville', serif;">
+                            <h2 style="font-size: 2em; font-weight: 300; margin-bottom: 40px;">AT YOUR SERVICE</h2>
+                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; max-width: 1400px; margin: 0 auto;">
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\diptyque-free-delivery-illustration.svg" alt="Free Delivery" style="width: 100px; height: auto;">
+                                    <p style="font-size: 0.9em;">FREE DELIVERY</p>
+                                </div>
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\diptyque-free-gift-set-illustration.svg" alt="Free Gift Set" style="width: 100px; height: auto;">
+                                    <p>FREE GIFT SET</p>
+                                </div>
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\diptyque-try-before-you-buy-illustration.svg" alt="Try Before You Buy" style="width: 100px; height: auto;">
+                                    <p>TRY BEFORE YOU BUY</p>
+                                </div>
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\Echantillons_offerts.svg" alt="Free Samples" style="width: 100px; height: auto;">
+                                    <p>FREE SAMPLES</p>
+                                </div>
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\diptyque-free-return-illustration.svg" alt="Free Returns" style="width: 100px; height: auto;">
+                                    <p>FREE RETURNS</p>
+                                </div>
+                                <div style="flex: 1; min-width: 150px; margin: 20px;">
+                                    <img src="C:\Users\Vinod\Downloads\diptyque-welcome-gift-illustration.svg" alt="Welcome Gift" style="width: 100px; height: auto;">
+                                    <p>WELCOME GIFT</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <section class="newsletter" data-aos="fade-up">
+        <h2>Join Our Private Collection</h2>
+        <p>Be the first to discover our latest creations</p>
+        <form>
+            <input type="email" placeholder="Your email address">
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+    <footer>
+    <footer style="background-color: white; color: black;">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>CLIENT CARE</h3>
+                <ul style="line-height: 2; text-decoration: none;">
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Contact Us</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">FAQ</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Shipping & Returns</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Track Order</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Store Locator</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Size Guide</a></li>
+                    <li class="phone" style="text-decoration: none; cursor: pointer; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">+91 7738115230</li>
+                </ul>
+            </div>
+
+            <div class="footer-column"> 
+                <h3>LEGAL INFORMATION</h3>
+                <ul style="line-height: 2; text-decoration: none;">
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">TERMS</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">PRIVACY</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">COOKIE</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Accessibility Statement</a></li>
+                </ul>
+            </div>
+
+            <!-- <div class="footer-column">
+                <h3>LEGAL TERMS</h3>
+                <ul style="line-height: 2; text-decoration: none;">
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Terms & Conditions</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Privacy Policy</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Cookie Policy</a></li>
+                    <li><a href="#" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='black'">Accessibility</a></li>
+                </ul>
+            </div> -->
+
+            <div class="social-links">
+                <h3>INDIA (₹)</h3>
+                <p style="margin: 0.5rem 0; color: black;">LANGUAGE: ENGLISH</p>
+                <h3 style="margin-top: 2rem;">FOLLOW US</h3>
+                <div class="social-icons" style="line-height: 2;">
+                    <a href="#" aria-label="Instagram" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out; display: inline-block; padding: 10px; border-radius: 50%; border: 1px solid #e5e5e5;" onmouseover="this.style.color='#888'; this.style.borderColor='#888'" onmouseout="this.style.color='black'; this.style.borderColor='#e5e5e5'"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" aria-label="Twitter" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out; display: inline-block; padding: 10px; border-radius: 50%; border: 1px solid #e5e5e5;" onmouseover="this.style.color='#888'; this.style.borderColor='#888'" onmouseout="this.style.color='black'; this.style.borderColor='#e5e5e5'"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="YouTube" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out; display: inline-block; padding: 10px; border-radius: 50%; border: 1px solid #e5e5e5;" onmouseover="this.style.color='#888'; this.style.borderColor='#888'" onmouseout="this.style.color='black'; this.style.borderColor='#e5e5e5'"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="Pinterest" style="color: black; text-decoration: none; transition: color 0.3s ease-in-out; display: inline-block; padding: 10px; border-radius: 50%; border: 1px solid #e5e5e5;" onmouseover="this.style.color='#888'; this.style.borderColor='#888'" onmouseout="this.style.color='black'; this.style.borderColor='#e5e5e5'"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom" style="text-align: center; margin-top: 4rem; padding: 2rem 0; border-top: 1px solid #e5e5e5;">
+            <div class="brand-info" style="color: #000; line-height: 2;">
+                <span class="brand-name" style="font-size: 1.2rem; font-weight: 500;">GUIDI</span>
+                <p style="margin: 0.5rem 0;">A luxury fragrance house established in India</p>
+                <p style="margin: 0.5rem 0;">Part of OTB Group</p>
+                <p style="margin: 0.5rem 0;">Supporting the OTB Foundation</p>
+                <p style="margin-top: 1rem;">© 2025 GUIDI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Header hide on scroll
+        let lastScroll = 0;
+        const header = document.querySelector('.header');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+    </script>
+    </footer>
+    
+</body>
+</html>
